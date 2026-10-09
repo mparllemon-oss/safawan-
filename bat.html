@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#f6f8fc" />
+  <title>Character & Word Counter | TextMetrics</title>
+  <style>
+    :root{color-scheme:light;--bg:#f6f8fc;--card:#fff;--text:#172238;--muted:#66748b;--line:#e3e9f2;--primary:#5968ec;--primary-dark:#4957d6;--soft:#eff1ff;--shadow:0 14px 48px rgba(36,51,91,.07);--warn:#e25157;--green:#12a77a}
+    *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top left,rgba(111,125,250,.09),transparent 36%),var(--bg);color:var(--text);font:15px/1.5 Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100vh;transition:background .25s,color .25s}
+    body.dark{color-scheme:dark;--bg:#101726;--card:#1a2435;--text:#ecf2fc;--muted:#a7b3c7;--line:#344155;--primary:#8995ff;--primary-dark:#7180ff;--soft:#283258;--shadow:0 14px 45px rgba(0,0,0,.17);--green:#40c79c}
+    button,input,textarea{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid rgba(109,122,255,.4);outline-offset:3px}
+    .wrapper{max-width:1130px;padding:36px 22px 54px;margin:auto}.top{display:flex;justify-content:space-between;align-items:center;gap:18px;margin-bottom:30px}.brand{display:flex;align-items:center;gap:13px}.logo{display:grid;place-items:center;width:47px;height:47px;border-radius:15px;color:#fff;background:linear-gradient(135deg,#6978ff,#9e6af1);font-size:23px;font-weight:800;box-shadow:0 8px 22px rgba(93,103,234,.2)}h1{font-size:clamp(23px,3.2vw,32px);margin:0;letter-spacing:-1.1px;line-height:1.2}.subtitle{color:var(--muted);margin:7px 0 0;font-size:14px}.theme{display:inline-flex;align-items:center;gap:9px;background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:12px;padding:11px 15px;box-shadow:var(--shadow);font-weight:650}
+    .stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px;margin-bottom:19px}.stat{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:21px 22px;box-shadow:var(--shadow);min-width:0}.stat .label{font-weight:600;color:var(--muted);font-size:13px}.stat .value{font-size:clamp(25px,3vw,35px);line-height:1.25;font-weight:780;letter-spacing:-1px;margin-top:11px;font-variant-numeric:tabular-nums}.stat .extra{color:var(--muted);font-size:12px;margin-top:7px}
+    .main{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:18px;align-items:start}.panel{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:23px;box-shadow:var(--shadow);min-width:0}.panel-title{font-size:17px;font-weight:750;letter-spacing:-.4px;margin:0 0 14px}.input-heading{display:flex;justify-content:space-between;gap:12px;align-items:center}.hint{font-size:12px;color:var(--muted)}textarea{display:block;width:100%;min-height:330px;resize:vertical;border:1.5px solid var(--line);border-radius:14px;padding:18px;color:var(--text);background:var(--bg);font-size:15px;line-height:1.75;transition:border .2s,box-shadow .2s}textarea:focus{border-color:var(--primary);box-shadow:0 0 0 4px rgba(107,119,248,.12);outline:none}textarea::placeholder{color:var(--muted);opacity:.8}textarea::-webkit-scrollbar{width:9px}textarea::-webkit-scrollbar-thumb{background:#a6afc8;border-radius:8px;border:2px solid var(--bg)}
+    .actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:15px}.action{border:1px solid var(--line);border-radius:11px;padding:10px 14px;background:var(--card);color:var(--text);font-weight:650;transition:transform .15s,background .15s,border-color .15s}.action:hover{transform:translateY(-1px);background:var(--soft);border-color:var(--primary)}.action.primary{background:var(--primary);color:white;border-color:var(--primary)}.action.primary:hover{background:var(--primary-dark)}.action.danger{color:var(--warn)}.action:disabled{opacity:.55;cursor:not-allowed;transform:none}
+    .side{display:grid;gap:18px}.limit-row{display:flex;justify-content:space-between;align-items:center;gap:12px}.limit-row label{font-size:13px;color:var(--muted);font-weight:600}#limit{width:113px;max-width:100%;color:var(--text);background:var(--bg);border:1px solid var(--line);padding:10px 11px;border-radius:10px}#limit:focus{border-color:var(--primary)}.progress-wrap{margin-top:20px}.progress-labels{display:flex;justify-content:space-between;gap:10px;color:var(--muted);font-size:13px;margin-bottom:10px}.track{height:10px;overflow:hidden;border-radius:30px;background:var(--line)}.fill{height:100%;width:0;background:linear-gradient(90deg,#7c88fb,#a170f4);border-radius:inherit;transition:width .2s,background .2s}.fill.over{background:var(--warn)}.limit-status{font-size:13px;margin:12px 0 0;color:var(--muted)}.limit-status.warning{color:var(--warn);font-weight:700}.mini-note{font-size:13px;color:var(--muted);margin:0;line-height:1.7}.tip{border-radius:12px;background:var(--soft);padding:14px 15px;font-size:13px;color:var(--text);margin-top:16px}.foot{text-align:center;color:var(--muted);font-size:12px;margin:30px 0 0}.toast{position:fixed;bottom:24px;left:50%;transform:translate(-50%,20px);background:#202b43;color:#fff;border-radius:12px;padding:12px 18px;box-shadow:0 10px 28px #0003;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:10;font-weight:650}.toast.show{opacity:1;transform:translate(-50%,0)}.section-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+    @media(max-width:830px){.main{grid-template-columns:1fr}.side{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:590px){.wrapper{padding:22px 13px 32px}.top{align-items:flex-start}.theme{font-size:0;padding:11px}.theme span{font-size:18px}.stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.stat{padding:16px}.stat .value{font-size:27px}.main{gap:12px}.side{grid-template-columns:1fr;gap:12px}.panel{padding:17px}textarea{min-height:290px}.action{flex-grow:1}.input-heading{align-items:start;flex-wrap:wrap}.hint{display:none}}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;scroll-behavior:auto!important}}
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <header class="top">
+      <div class="brand"><div class="logo" aria-hidden="true">Aa</div><div><h1>TextMetrics</h1><p class="subtitle">A smarter character & word counter</p></div></div>
+      <button id="themeBtn" class="theme" type="button" aria-label="Switch to dark mode" aria-pressed="false"><span id="themeIcon" aria-hidden="true">☾</span> <span class="themeWord">Theme</span></button>
+    </header>
+    <section class="stats" aria-label="Live text statistics">
+      <div class="stat"><div class="label">Characters</div><div id="characters" class="value">0</div><div class="extra">Including spaces</div></div>
+      <div class="stat"><div class="label">Words</div><div id="words" class="value">0</div><div class="extra">Total word count</div></div>
+      <div class="stat"><div class="label">Characters (no spaces)</div><div id="noSpaces" class="value">0</div><div class="extra">Excluding whitespace</div></div>
+      <div class="stat"><div class="label">Sentences</div><div id="sentences" class="value">0</div><div class="extra">Approximate sentence count</div></div>
+      <div class="stat"><div class="label">Paragraphs</div><div id="paragraphs" class="value">0</div><div class="extra">Non-empty text blocks</div></div>
+      <div class="stat"><div class="label">Reading time</div><div id="reading" class="value">0 sec</div><div class="extra">Based on 200 words/min</div></div>
+    </section>
+    <main class="main">
+      <section class="panel" aria-labelledby="editorTitle">
+        <div class="input-heading"><h2 id="editorTitle" class="panel-title">Your Text</h2><span class="hint">Start typing or paste text below</span></div>
+        <textarea id="editor" spellcheck="true" placeholder="Type or paste your text here to see instant statistics..." aria-label="Text to analyze"></textarea>
+        <div class="actions" aria-label="Text utilities">
+          <button id="copyBtn" class="action primary" type="button">⧉ Copy Text</button>
+          <button id="clearBtn" class="action danger" type="button">Clear Text</button>
+          <button id="upperBtn" class="action" type="button">UPPERCASE</button>
+          <button id="lowerBtn" class="action" type="button">lowercase</button>
+          <button id="titleBtn" class="action" type="button">Title Case</button>
+        </div>
+      </section>
+      <aside class="side">
+        <section class="panel" aria-labelledby="limitTitle">
+          <h2 id="limitTitle" class="panel-title">Character Limit</h2>
+          <div class="limit-row"><label for="limit">Maximum characters</label><input id="limit" type="number" min="1" step="1" inputmode="numeric" value="280" aria-describedby="limitDescription" /></div>
+          <div class="progress-wrap"><div class="progress-labels"><span>Progress</span><strong id="fraction">0 / 280</strong></div><div id="progress" class="track" role="progressbar" aria-label="Character limit usage" aria-valuemin="0" aria-valuemax="280" aria-valuenow="0"><div id="fill" class="fill"></div></div><p id="limitDescription" class="limit-status" role="status">280 characters remaining</p></div>
+        </section>
+        <section class="panel" aria-labelledby="aboutTitle"><h2 id="aboutTitle" class="panel-title">Quick Guide</h2><p class="mini-note">Your counts update instantly as you type, paste, or edit. Set a character limit to track your writing length.</p><div class="tip">✦ Tip: Use the formatting buttons to quickly change your text's capitalization.</div></section>
+      </aside>
+    </main>
+    <p class="foot">TextMetrics · Fast, private, and designed for every screen. All analysis happens in your browser.</p>
+  </div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script>
+    (() => {
+      'use strict';
+      const byId = id => document.getElementById(id);
+      const editor = byId('editor');
+      const limitField = byId('limit');
+      const fmt = new Intl.NumberFormat();
+      let toastTimeout;
+
+      // Count user-visible Unicode characters rather than UTF-16 code units.
+      const characterCount = text => [...new Intl.Segmenter(undefined, { granularity: 'grapheme' }).segment(text)].length;
+      const getWordCount = text => (text.trim().match(/[^\s]+/gu) || []).length;
+      const getSentenceCount = text => {
+        const trimmed = text.trim();
+        if (!trimmed) return 0;
+        // Group consecutive terminal punctuation, so "Hello?!" counts once.
+        return (trimmed.match(/[^.!?。！？]+(?:[.!?。！？]+|$)/gu) || []).filter(part => /[^\s.!?。！？]/u.test(part)).length;
+      };
+      const getParagraphCount = text => text.trim() ? text.trim().split(/(?:\r?\n\s*){2,}/u).filter(p => p.trim()).length : 0;
+      const readingLabel = words => {
+        if (!words) return '0 sec';
+        const seconds = Math.ceil(words * 60 / 200);
+        if (seconds < 60) return `${seconds} sec`;
+        const minutes = Math.floor(seconds / 60);
+        const remaining = seconds % 60;
+        return remaining ? `${minutes}m ${remaining}s` : `${minutes} min`;
+      };
+      const getLimit = () => {
+        const n = Number(limitField.value);
+        return limitField.value.trim() && Number.isSafeInteger(n) && n > 0 ? n : null;
+      };
+
+      function update() {
+        const text = editor.value;
+        const chars = characterCount(text);
+        const nonspace = characterCount(text.replace(/\s/gu, ''));
+        const words = getWordCount(text);
+        byId('characters').textContent = fmt.format(chars);
+        byId('words').textContent = fmt.format(words);
+        byId('noSpaces').textContent = fmt.format(nonspace);
+        byId('sentences').textContent = fmt.format(getSentenceCount(text));
+        byId('paragraphs').textContent = fmt.format(getParagraphCount(text));
+        byId('reading').textContent = readingLabel(words);
+        const limit = getLimit();
+        const progress = byId('progress');
+        const fill = byId('fill');
+        const status = byId('limitDescription');
+        byId('fraction').textContent = `${fmt.format(chars)} / ${limit === null ? '—' : fmt.format(limit)}`;
+        fill.style.width = `${limit === null ? 0 : Math.min(100, chars / limit * 100)}%`;
+        const exceeded = limit !== null && chars > limit;
+        fill.classList.toggle('over', exceeded);
+        status.classList.toggle('warning', exceeded);
+        progress.setAttribute('aria-valuemax', String(limit ?? 100));
+        progress.setAttribute('aria-valuenow', String(Math.min(chars, limit ?? 100)));
+        if (limit === null) status.textContent = 'Enter a positive whole-number limit.';
+        else if (exceeded) status.textContent = `${fmt.format(chars - limit)} characters over the limit`;
+        else if (chars === limit) status.textContent = 'Character limit reached';
+        else status.textContent = `${fmt.format(limit - chars)} characters remaining`;
+      }
+
+      function toast(message) {
+        const element = byId('toast');
+        element.textContent = message;
+        element.classList.add('show');
+        clearTimeout(toastTimeout);
+        toastTimeout = setTimeout(() => element.classList.remove('show'), 2400);
+      }
+      async function copyText() {
+        if (!editor.value) return toast('Enter some text to copy.');
+        try {
+          if (navigator.clipboard?.writeText && window.isSecureContext) {
+            await navigator.clipboard.writeText(editor.value);
+          } else {
+            // Fallback for local files and browsers without the Clipboard API.
+            editor.focus();editor.select();
+            if (!document.execCommand('copy')) throw new Error('Copy not supported');
+            editor.setSelectionRange(editor.value.length, editor.value.length);
+          }
+          toast('Text copied to clipboard!');
+        } catch { toast('Could not copy automatically. Select the text and copy it manually.'); }
+      }
+      function transform(fn) {
+        if (!editor.value) return toast('Enter some text first.');
+        const start = editor.selectionStart, end = editor.selectionEnd;
+        editor.value = fn(editor.value);
+        editor.focus();
+        editor.setSelectionRange(Math.min(start,editor.value.length), Math.min(end,editor.value.length));
+        update();
+      }
+      function titleCase(text) {
+        return text.toLocaleLowerCase().replace(/(^|[^\p{L}\p{N}])([\p{L}])/gu, (match, boundary, letter) => boundary + letter.toLocaleUpperCase());
+      }
+      editor.addEventListener('input', update);
+      limitField.addEventListener('input', update);
+      byId('copyBtn').addEventListener('click', copyText);
+      byId('clearBtn').addEventListener('click', () => { editor.value = '';update();editor.focus();toast('Text cleared.'); });
+      byId('upperBtn').addEventListener('click', () => transform(text => text.toLocaleUpperCase()));
+      byId('lowerBtn').addEventListener('click', () => transform(text => text.toLocaleLowerCase()));
+      byId('titleBtn').addEventListener('click', () => transform(titleCase));
+
+      const savedTheme = (() => { try { return localStorage.getItem('textmetrics-theme'); } catch { return null; } })();
+      const initialDark = savedTheme ? savedTheme === 'dark' : window.matchMedia?.('(prefers-color-scheme: dark)').matches;
+      function setTheme(dark) {
+        document.body.classList.toggle('dark', dark);
+        byId('themeIcon').textContent = dark ? '☀' : '☾';
+        byId('themeBtn').setAttribute('aria-label', dark ? 'Switch to light mode' : 'Switch to dark mode');
+        byId('themeBtn').setAttribute('aria-pressed', String(dark));
+        document.querySelector('meta[name="theme-color"]').content = dark ? '#101726' : '#f6f8fc';
+        try { localStorage.setItem('textmetrics-theme', dark ? 'dark' : 'light'); } catch { /* storage can be disabled */ }
+      }
+      byId('themeBtn').addEventListener('click', () => setTheme(!document.body.classList.contains('dark')));
+      setTheme(Boolean(initialDark));
+      update();
+    })();
+  </script>
+</body>
+</html>
