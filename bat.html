@@ -42,7 +42,7 @@
   <div class="wrapper">
     <header class="top">
       <div class="brand"><div class="logo" aria-hidden="true">Aa</div><div><h1>TextMetrics</h1><p class="subtitle">A smarter character & word counter</p></div></div>
-      <button id="themeBtn" class="theme" type="button" aria-label="Switch to dark mode" aria-pressed="false"><span id="themeIcon" aria-hidden="true">☾</span> <span class="themeWord">Theme</span></button>
+      <button id="chatTopBtn" class="theme" type="button" style="margin-left:auto" aria-controls="chatBox">💬 Open Chatbot</button><button id="themeBtn" class="theme" type="button" aria-label="Switch to dark mode" aria-pressed="false"><span id="themeIcon" aria-hidden="true">☾</span> <span class="themeWord">Theme</span></button>
     </header>
     <section class="stats" aria-label="Live text statistics">
       <div class="stat"><div class="label">Characters</div><div id="characters" class="value">0</div><div class="extra">Including spaces</div></div>
@@ -73,6 +73,7 @@
         <section class="panel" aria-labelledby="aboutTitle"><h2 id="aboutTitle" class="panel-title">Quick Guide</h2><p class="mini-note">Your counts update instantly as you type, paste, or edit. Set a character limit to track your writing length.</p><div class="tip">✦ Tip: Use the formatting buttons to quickly change your text's capitalization.</div></section>
       </aside>
     </main>
+    <div style="text-align:center;margin-top:24px"><button id="chatBottomBtn" class="action primary" type="button">💬 Open TextMetrics Assistant Chatbot</button></div>
     <p class="foot">TextMetrics · Fast, private, and designed for every screen. All analysis happens in your browser.</p>
   </div>
 
@@ -247,6 +248,8 @@
         else launch.focus();
       }
       launch.addEventListener('click', () => toggle(box.hidden));
+      document.getElementById('chatTopBtn').addEventListener('click', () => toggle(true));
+      document.getElementById('chatBottomBtn').addEventListener('click', () => toggle(true));
       close.addEventListener('click', () => toggle(false));
       form.addEventListener('submit', event => {
         event.preventDefault();
