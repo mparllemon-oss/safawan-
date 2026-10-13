@@ -17,6 +17,25 @@
     .side{display:grid;gap:18px}.limit-row{display:flex;justify-content:space-between;align-items:center;gap:12px}.limit-row label{font-size:13px;color:var(--muted);font-weight:600}#limit{width:113px;max-width:100%;color:var(--text);background:var(--bg);border:1px solid var(--line);padding:10px 11px;border-radius:10px}#limit:focus{border-color:var(--primary)}.progress-wrap{margin-top:20px}.progress-labels{display:flex;justify-content:space-between;gap:10px;color:var(--muted);font-size:13px;margin-bottom:10px}.track{height:10px;overflow:hidden;border-radius:30px;background:var(--line)}.fill{height:100%;width:0;background:linear-gradient(90deg,#7c88fb,#a170f4);border-radius:inherit;transition:width .2s,background .2s}.fill.over{background:var(--warn)}.limit-status{font-size:13px;margin:12px 0 0;color:var(--muted)}.limit-status.warning{color:var(--warn);font-weight:700}.mini-note{font-size:13px;color:var(--muted);margin:0;line-height:1.7}.tip{border-radius:12px;background:var(--soft);padding:14px 15px;font-size:13px;color:var(--text);margin-top:16px}.foot{text-align:center;color:var(--muted);font-size:12px;margin:30px 0 0}.toast{position:fixed;bottom:24px;left:50%;transform:translate(-50%,20px);background:#202b43;color:#fff;border-radius:12px;padding:12px 18px;box-shadow:0 10px 28px #0003;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:10;font-weight:650}.toast.show{opacity:1;transform:translate(-50%,0)}.section-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
     @media(max-width:830px){.main{grid-template-columns:1fr}.side{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:590px){.wrapper{padding:22px 13px 32px}.top{align-items:flex-start}.theme{font-size:0;padding:11px}.theme span{font-size:18px}.stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.stat{padding:16px}.stat .value{font-size:27px}.main{gap:12px}.side{grid-template-columns:1fr;gap:12px}.panel{padding:17px}textarea{min-height:290px}.action{flex-grow:1}.input-heading{align-items:start;flex-wrap:wrap}.hint{display:none}}
     @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;scroll-behavior:auto!important}}
+
+    /* TextMetrics interactive help chatbot */
+    .chat-launch{position:fixed;right:22px;bottom:22px;z-index:30;border:0;border-radius:999px;background:var(--primary);color:white;padding:14px 19px;font-weight:750;box-shadow:0 8px 26px #5363d766;display:flex;gap:9px;align-items:center}
+    .chat-launch:hover{background:var(--primary-dark)}
+    .chat-box{position:fixed;right:22px;bottom:86px;width:min(370px,calc(100vw - 24px));height:min(510px,calc(100dvh - 110px));background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:20px;z-index:31;box-shadow:0 18px 60px #0003;display:flex;flex-direction:column;overflow:hidden}
+    .chat-box[hidden]{display:none}
+    .chat-header{background:var(--primary);color:white;padding:15px 16px;display:flex;align-items:center;justify-content:space-between}
+    .chat-header strong{font-size:16px}.chat-header small{display:block;opacity:.9;font-size:12px}
+    .chat-close{color:white;background:transparent;border:0;font-size:25px;padding:0 6px}
+    .chat-messages{flex:1;overflow-y:auto;padding:15px;display:flex;flex-direction:column;gap:11px;overscroll-behavior:contain}
+    .chat-bubble{max-width:91%;border-radius:15px;padding:10px 13px;line-height:1.5;font-size:13.5px;overflow-wrap:anywhere;white-space:pre-wrap}
+    .chat-bubble.bot{background:var(--soft);align-self:flex-start}
+    .chat-bubble.user{background:var(--primary);color:white;align-self:flex-end}
+    .chat-chips{display:flex;gap:7px;padding:9px 12px;overflow-x:auto;border-top:1px solid var(--line)}
+    .chat-chips button{white-space:nowrap;padding:7px 10px;border:1px solid var(--line);color:var(--text);background:var(--card);border-radius:999px;font-size:12px}
+    .chat-form{display:flex;padding:11px;gap:8px;border-top:1px solid var(--line)}
+    .chat-form input{flex:1;min-width:0;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--text);padding:10px}
+    .chat-form button{background:var(--primary);color:white;border:none;border-radius:12px;padding:9px 14px;font-weight:650}
+    @media(max-width:480px){.chat-launch{right:13px;bottom:13px}.chat-box{right:12px;bottom:75px;height:min(500px,calc(100dvh - 95px))}}
   </style>
 </head>
 <body>
@@ -56,6 +75,14 @@
     </main>
     <p class="foot">TextMetrics · Fast, private, and designed for every screen. All analysis happens in your browser.</p>
   </div>
+
+  <button id="chatLaunch" class="chat-launch" type="button" aria-controls="chatBox" aria-expanded="false">💬 Chat Help</button>
+  <section id="chatBox" class="chat-box" aria-label="TextMetrics chatbot" hidden>
+    <div class="chat-header"><div><strong>💬 TextMetrics Assistant</strong><small>Website help • English & Roman Urdu</small></div><button id="chatClose" class="chat-close" type="button" aria-label="Close chatbot">×</button></div>
+    <div id="chatMessages" class="chat-messages" role="log" aria-live="polite" aria-relevant="additions"></div>
+    <div class="chat-chips"><button type="button" data-ask="How to count words?">Count words</button><button type="button" data-ask="What is character limit?">Character limit</button><button type="button" data-ask="How to copy text?">Copy text</button></div>
+    <form id="chatForm" class="chat-form"><input id="chatInput" type="text" maxlength="500" autocomplete="off" placeholder="Ask a question..." aria-label="Chat message" required /><button type="submit">Send</button></form>
+  </section>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <script>
     (() => {
@@ -170,6 +197,67 @@
       byId('themeBtn').addEventListener('click', () => setTheme(!document.body.classList.contains('dark')));
       setTheme(Boolean(initialDark));
       update();
+    })();
+  </script>
+
+  <script>
+    (() => {
+      const launch = document.getElementById('chatLaunch');
+      const box = document.getElementById('chatBox');
+      const close = document.getElementById('chatClose');
+      const messages = document.getElementById('chatMessages');
+      const form = document.getElementById('chatForm');
+      const input = document.getElementById('chatInput');
+      const editor = document.getElementById('editor');
+      const addMessage = (speaker, value) => {
+        const bubble = document.createElement('div');
+        bubble.className = 'chat-bubble ' + speaker;
+        bubble.textContent = value;
+        messages.appendChild(bubble);
+        messages.scrollTop = messages.scrollHeight;
+      };
+      function response(q) {
+        const t = q.toLowerCase().trim();
+        if (/hello|hi|hey|salam|assalam|aoa/.test(t)) return 'Hello! 👋 Main TextMetrics help chatbot hoon. Aap word count, character limit, copy text aur formatting ke bare mein pooch sakte hain.';
+        if (/word|lafz|alfaz/.test(t)) return 'Words count karne ke liye “Your Text” box mein likhein. Upar “Words” card mein total words foran nazar aayenge.';
+        if (/character|letter|harf|limit/.test(t)) return 'Characters total letters, spaces aur symbols ka count hain. “Character Limit” mein apni maximum limit set karein. Progress bar aapko bata dega kitni jagah bachi hai.';
+        if (/sentence|jumla|jumlay/.test(t)) return '“Sentences” card aapki likhi hui sentences ka approximate count dikhata hai.';
+        if (/paragraph|para/.test(t)) return 'Paragraphs ko alag karne ke liye blank line rakhein. “Paragraphs” card unka count batayega.';
+        if (/read|time|waqt/.test(t)) return 'Reading time text ke words se estimate hota hai, taqreeban 200 words per minute.';
+        if (/copy|paste|clipboard/.test(t)) return 'Text likhein, phir “Copy Text” button dabayein. Text clipboard mein copy ho jayega.';
+        if (/clear|delete|remove|hata/.test(t)) return '“Clear Text” button se poora text saaf ho jayega.';
+        if (/upper|capital|lower|title|format/.test(t)) return 'UPPERCASE sab letters bare karta hai, lowercase sab chhote, aur Title Case har word ka pehla letter capital karta hai.';
+        if (/dark|light|theme|rang|color/.test(t)) return 'Website ke upar right side Theme button dabayein. Light aur dark mode change ho jayega.';
+        if (/count|kitn|number|stats|statistics/.test(t)) {
+          const s=editor.value.trim();
+          return s ? 'Abhi aapke text mein ' + (s.match(/\S+/g)||[]).length + ' words hain. Full statistics upar cards mein hain.' : 'Pehle “Your Text” box mein text likhein. Main word count bata sakta hoon.';
+        }
+        if (/help|madad|kya|what|how/.test(t)) return 'Main aapko word/character count, sentences, paragraphs, reading time, character limit, copy, clear, uppercase/lowercase aur theme ke baare mein guide kar sakta hoon.';
+        return 'Main TextMetrics website ka help chatbot hoon, general AI chatbot nahi. Aap poochhein: “How to count words?”, “Character limit kya hai?” ya “Copy text kaise karein?”';
+      }
+      function ask(q) {
+        if (!q.trim()) return;
+        addMessage('user', q.trim());
+        addMessage('bot', response(q));
+      }
+      function toggle(show) {
+        box.hidden = !show;
+        launch.setAttribute('aria-expanded', String(show));
+        if (show) input.focus();
+        else launch.focus();
+      }
+      launch.addEventListener('click', () => toggle(box.hidden));
+      close.addEventListener('click', () => toggle(false));
+      form.addEventListener('submit', event => {
+        event.preventDefault();
+        const q = input.value;
+        input.value = '';
+        ask(q);
+        input.focus();
+      });
+      box.querySelectorAll('[data-ask]').forEach(button => button.addEventListener('click', () => ask(button.dataset.ask)));
+      document.addEventListener('keydown', event => { if(event.key === 'Escape' && !box.hidden) toggle(false); });
+      addMessage('bot', 'Assalamualaikum! 👋 Main TextMetrics Assistant hoon. Aapko word counting ya website use karne mein kis cheez ki help chahiye?');
     })();
   </script>
 </body>
